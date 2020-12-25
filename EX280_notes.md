@@ -93,5 +93,64 @@ oc rsync /localpath/local_path pod:/pod_path
 #create tunnel
 oc port-forward <pod_name> <local_port>:<remote_port>
 ~~~
+## Manage users and policies
+* after OS installation configure KUBECONFIG, password for kubeadmin can be find in installation logs
+~~~
+export KUBECONFIG=/home/user/auth/kubeconfig
+oc login -u kubeadmin -p <password>
 
+#after configuring identity provider and creating user with cluster-admin role, kubeadmin user shueld be removed
+oc delete secret kubeadmin -n kube-system
+~~~
+* Configure the HTPasswd identity provider for authentication
+~~~
+#create htpasswd file
+htpasswd -c -B -b <filename> <username> <password>
+#add user
+htpasswd -B -b <filename> <username> <password>
+
+#create secret from htpasswd file
+oc create secret generic htpass-secret --from-file htpasswd=<htpasswd_file> -n openshift-config
+
+#configure identity provider
+oc get oauth cluster -o yaml > oauth.yaml
+#add lines
+spec:
+  identityProviders:
+  - name: my_identity_provider
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      fileData:
+        name: htpass-secret
+#patch oauth
+oc replace -f oauth.yaml
+~~~
+* Modify user passwords/delete user
+~~~
+oc extract secret/password-secret -n openshoft-config --to /tmp/ --confirm
+
+htpasswd -D <htfile> <username>
+htpasswd -b -B <htfile> <username> <password>
+
+#after editing file update secret
+oc set data secret/htpasswd-secret --from-file <htfile> -n openshift-config
+#pods in openshift-authentification should be recreated, to check
+oc get pods -n openshift-authentification
+
+#when user deleted from secret/htpasswd_file, it also have to be delete user resource and identity resource
+oc delete user <username>
+oc delete identity htpasswd_provider:<userneme>
+~~~
+* Modify user and group permissions
+~~~
+oc adm policy add-cluster-role-to-user <role> <user>
+oc adm policy add-cluster-role-to-group <role> <group>
+~~~
+* Create and manage groups
+~~~
+oc adm groups new <newgroup>
+oc adm groups add-users <user1> <user2>
+oc get groups
+~~~
 
