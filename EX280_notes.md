@@ -79,7 +79,7 @@ oc logs <pod> -c <containername>
 * Create Troubleshooting pod:
 ~~~
 oc debug deployment/<depl_name> --as-root
-
+~~~
 * Iteraction with running container
 ~~~
 #open shell inside a pod
