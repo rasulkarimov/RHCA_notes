@@ -39,9 +39,9 @@
 ## Manage OpenShift Container Platform
 
 Health of OpenShift nodes:
-'''
+```
 oc get nodes
 oc adm top nodes
 oc describe node <nodename>
-'''
+```
 
