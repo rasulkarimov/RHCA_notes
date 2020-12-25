@@ -61,6 +61,7 @@ oc get clusteroperators
 oc adm node-logs -u crio <nodename>
 oc adm node-logs -u kubelet <nodename>
 oc adm node-logs <nodename>
+~~~
 
 * Opening Shell on a Node:
 ~~~
