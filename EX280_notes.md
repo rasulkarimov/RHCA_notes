@@ -38,10 +38,59 @@
 # Notes
 ## Manage OpenShift Container Platform
 
-Health of OpenShift nodes:
-```
+* Health of OpenShift nodes:
+~~~
 oc get nodes
 oc adm top nodes
 oc describe node <nodename>
-```
+~~~
+
+* Review Cluster Version Resource:
+~~~
+oc get clusterversion
+oc describe clusterversion
+~~~
+
+* Review Clusteroperators:
+~~~
+oc get clusteroperators
+~~~
+
+* Display the logs of Nodes:
+~~~
+oc adm node-logs -u crio <nodename>
+oc adm node-logs -u kubelet <nodename>
+oc adm node-logs <nodename>
+
+* Opening Shell on a Node:
+~~~
+oc debug <nodename>
+chroot /host
+crictl ps
+~~~
+
+* View logs
+~~~
+oc logs <pod>
+oc logs <pod> -c <containername>
+~~~
+
+* Create Troubleshooting pod:
+~~~
+oc debug deployment/<depl_name> --as-root
+
+* Iteraction with running container
+~~~
+#open shell inside a pod
+oc rsh <pod_name> 
+
+#copys file to pod or from pod
+oc cp /localpath/local_file pod:/pod_path
+#copy multiple files
+oc rsync /localpath/local_path pod:/pod_path
+
+#create tunnel
+oc port-forward <pod_name> <local_port>:<remote_port>
+~~~
+
 
