@@ -1,5 +1,5 @@
-## Exam Objectives
-# Manage OpenShift Container Platform
+# Exam Objectives
+## Manage OpenShift Container Platform
 * Use the command-line interface to manage and configure an OpenShift cluster
 * Use the web console to manage and configure an OpenShift cluster
 * Create and delete projects
