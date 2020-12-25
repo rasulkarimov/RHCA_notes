@@ -34,3 +34,14 @@
 ## Configure cluster scaling
 * Manually control the number of cluster workers
 * Automatically scale the number of cluster workers
+
+# Notes
+## Manage OpenShift Container Platform
+
+Health of OpenShift nodes:
+'''
+oc get nodes
+oc adm top nodes
+oc describe node <nodename>
+'''
+
