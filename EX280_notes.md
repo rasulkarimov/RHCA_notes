@@ -154,3 +154,14 @@ oc adm groups add-users <user1> <user2>
 oc get groups
 ~~~
 
+## Control access to resources
+SCC (Security Context Constraints) - security mechanizm that restrict access to host resurses, but not to operations in OpenShift.
+~~~
+oc get scc
+oc describe scc anyuid
+oc describe pod <podname> | grep scc
+oc get pod <podname> -o yaml | oc adm policy scc-subject-review -f -
+oc create serviceaccount <serviceaccountname>
+oc adm policy add-scc-to-user <scc> -z <serviceaccountname>
+oc set serviceaccount deployment/<deploymentname> <serviceaccountname>
+~~~
