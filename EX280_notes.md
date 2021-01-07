@@ -165,3 +165,32 @@ oc create serviceaccount <serviceaccountname>
 oc adm policy add-scc-to-user <scc> -z <serviceaccountname>
 oc set serviceaccount deployment/<deploymentname> <serviceaccountname>
 ~~~
+##Configure networking components
+* Troubleshoot software defined networking
+~~~
+oc describe dns.operator/default
+oc describe network/clusrter
+oc debug -t deployment/<deploymentname> --image ubi:8.9  // provide other image if tools for troubleshooting required
+curl -v telnet://<IP>:<3306> // to test connection from frontend to db
+oc describe svc/<svcname> // check public IP and selector binding
+~~~  
+* Create and edit external routes
+~~~
+oc create route edge <routename> --service <svcname> --hostname <somehostname> // OS generates its own crtificate
+~~~
+* Control cluster network ingress
+~~~
+oc expose svc/<svcname>
+~~~
+* Create a self signed certificate
+~~~
+openssl genrsa -out training.key 2048
+openssl req -new -subj <subj> - key training.key -out training.csr
+openssl x509 -req -in training.csr -passin file:passphrase.txt -CA training-CA.pem -CAkey training-CA.key -CAcreateserial -out training.crt -days 1825 -sha256 -extfile training.ext
+~~~
+* Secure routes using TLS certificates
+~~~
+oc create secret tls <secretname> --cert training.crt --key certs/training.key
+mount tls secret
+oc create route passthrough <routname> --service <servicename> --port 8443 --hostname <hostname>
+~~~
