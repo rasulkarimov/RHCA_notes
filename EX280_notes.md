@@ -165,7 +165,7 @@ oc create serviceaccount <serviceaccountname>
 oc adm policy add-scc-to-user <scc> -z <serviceaccountname>
 oc set serviceaccount deployment/<deploymentname> <serviceaccountname>
 ~~~
-##Configure networking components
+## Configure networking components
 * Troubleshoot software defined networking
 ~~~
 oc describe dns.operator/default
@@ -177,15 +177,39 @@ oc describe svc/<svcname> // check public IP and selector binding
 * Create and edit external routes
 ~~~
 oc create route edge <routename> --service <svcname> --hostname <somehostname> // OS generates its own crtificate
+oc extract secret/router-ca -n openshift-openshift-ingress-operator --key tls.crt
+curl --cacert tls.crt https://<hostname>
 ~~~
 * Control cluster network ingress
 ~~~
-oc expose svc/<svcname>
+network policy template:
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: network_policy_1
+spec:
+  podSelector:
+    matchLabels:
+      deployment: <depl_name>
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchlabels:
+            name: <fromnamespacename>
+        podSelector:
+          matchLabels:
+            deployment:  <depl_name>
+      ports:
+      - port: 8080
+        protocol: TCP
+oc create -f network_policy_1 -n <namespacename>
+oc label namespace <fromnamespacename> name=<fromnamespacename>
+oc get networkpolicies
 ~~~
 * Create a self signed certificate
 ~~~
 openssl genrsa -out training.key 2048
-openssl req -new -subj <subj> - key training.key -out training.csr
+openssl req -new  -key training.key -out training.csr
 openssl x509 -req -in training.csr -passin file:passphrase.txt -CA training-CA.pem -CAkey training-CA.key -CAcreateserial -out training.crt -days 1825 -sha256 -extfile training.ext
 ~~~
 * Secure routes using TLS certificates
