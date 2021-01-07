@@ -181,7 +181,6 @@ oc extract secret/router-ca -n openshift-openshift-ingress-operator --key tls.cr
 curl --cacert tls.crt https://<hostname>
 ~~~
 * Control cluster network ingress
-~~~
 network policy template:
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -202,6 +201,7 @@ spec:
       ports:
       - port: 8080
         protocol: TCP
+~~~
 oc create -f network_policy_1 -n <namespacename>
 oc label namespace <fromnamespacename> name=<fromnamespacename>
 oc get networkpolicies
@@ -217,4 +217,42 @@ openssl x509 -req -in training.csr -passin file:passphrase.txt -CA training-CA.p
 oc create secret tls <secretname> --cert training.crt --key certs/training.key
 mount tls secret
 oc create route passthrough <routname> --service <servicename> --port 8443 --hostname <hostname>
+~~~
+## Configure pod scheduling
+* Limit resource usage
+* Scale applications to meet increased demand
+~~~
+  oc scale --replicas 3 deployment/<depl_name> 
+~~~
+* Control pod placement across cluster nodes
+Node labling
+~~~
+  oc label node <nodename> env=prod --overwrite
+  oc label node <nodename> env=prod env- // to delete label
+  oc get node <nodename> --show-lables
+  oc get nodes -L env
+~~~
+Mashinesets labling
+~~~
+  oc get mashines -n openshift-mashine-api -o wide
+  oc get mashineset -n openshift-mashine-api 
+  oc edit mashineset <name> -n openshift-mashine-api 
+~~~  
+Pode placement
+~~~
+  oc edit deployment/<depl_name>
+~~~
+  ---
+  spec:
+    nodeSelector:
+      env: prod
+  ---
+or patch deployment
+~~~
+  oc patch deployment/<depl_name> --patch '{"spec:"{"template:"{"spec":{"nodeSelector":{"dev":"env"}}}}}'
+~~~
+configuring nodeSelector for a project  
+~~~
+  oc adm new-project <proj_name> --node-selector 'tier=1' // for new proj
+  oc annotiate namespace <proj-name> openshift.io/node-selector="tier=2" --overwrite // for existing proj
 ~~~
