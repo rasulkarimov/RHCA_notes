@@ -218,10 +218,14 @@ oc create secret tls <secretname> --cert training.crt --key certs/training.key
 mount tls secret
 oc create route passthrough <routname> --service <servicename> --port 8443 --hostname <hostname>
 ~~~
+
+
 ## Configure pod scheduling
 * Scale applications to meet increased demand
 ~~~
   oc scale --replicas 3 deployment/<depl_name> 
+  oc autoscale dc/<dc_name> --min 1 --max 10 --cpu-present 80
+  oc get hpa
 ~~~
 * Control pod placement across cluster nodes
 Node labling
@@ -255,6 +259,8 @@ configuring nodeSelector for a project
   oc adm new-project <proj_name> --node-selector 'tier=1' // for new proj
   oc annotiate namespace <proj-name> openshift.io/node-selector="tier=2" --overwrite // for existing proj
 ~~~
+
+
 * Limit resource usage
 Resource limits
 ~~~
@@ -266,17 +272,17 @@ Resource limits
       cpu: "80m"
       memory: 100Mi
 ~~~
-  Or alternative variant
+Or alternative variant:
 ~~~
   oc set resources deployment  <depl_name> --requests cpu=10m,memory=20Mi --limits cpu=80m,memory=100Mi
 ~~~
-View usage
+View usage:
 ~~~
   oc describe node <nodename>
   oc adm top nodes -l 
 ~~~
 Applying quotas
-  ResourceQuota template
+  ResourceQuota template:
 ~~~
   apiVersion: v1
   kind: ResourceQuota
@@ -291,15 +297,17 @@ Applying quotas
 ~~~
   oc create --save-config -f dev-quota.yml
 ~~~
-Alternative way to create a resource quota
+Alternative way to create a resource quota:
 ~~~
   oc create quota dev-quota --hard services=10,cpu=1300,memory=1.5Gi
   oc get resourcequota
   oc describe quota
   oc delete resourcequota <quoyaname>
 ~~~
-Limit Ranges
-  LimitRange template
+  
+  
+Limit Ranges<br/>
+LimitRange template:
 ~~~
 apiVersion: "v1"
 kind: "LimitRange"
@@ -315,22 +323,23 @@ spec:
         cpu: "10m"
         memory: "5Mi" 
 ~~~
-~~~
+  ~~~
   oc create --save-config -f dev-limits.yml
   oc describe limitrange dev-limits
   oc delete limitrange dev-limits.yml
-~~~
-ClusterResourceQuota
+  ~~~
+  
+  ClusterResourceQuota<br/>
   Creating ClusterResourceQuota for all projects owned by qa user:
   ~~~
   oc create clusterquota user-qa --project-annotiation-selector openshift-requester=qa --hard pods=12,secrets=20
   ~~~
-  For all projects that have been assigned env=dev labe:
+  Creating for all projects that have been assigned env=dev labe:
   ~~~
   oc create clusterquota env-dev --project-label-selector env=dev --hard pods=10,services=5
   oc delete clusterquota <clusterquotaname>
   ~~~
-Customizing the default Project Template
+  Customizing the default Project Template
   ~~~
   oc adm create-bootstrap-project-template -o yaml > project_template.yml
   oc create -f project_template.yml -n openshift-config
