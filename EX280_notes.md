@@ -93,14 +93,16 @@ oc rsync /localpath/local_path pod:/pod_path
 #create tunnel
 oc port-forward <pod_name> <local_port>:<remote_port>
 ~~~
+* Persistent Volume and Persistent Volume Claim
+~~~
+oc get storageclass
+oc set volume deployment/<depl_name> --add --type pvc --name <stor_name> --claim-class <storageclass_name> --claim-mode rwo --claim-size 15Gi --munt-path /var/liv/example-app --claim-name <claim_name>
+~~~
 ## Manage users and policies
 * after OS installation configure KUBECONFIG, password for kubeadmin can be find in installation logs
 ~~~
 export KUBECONFIG=/home/user/auth/kubeconfig
 oc login -u kubeadmin -p <password>
-
-#after configuring identity provider and creating user with cluster-admin role, kubeadmin user shueld be removed
-oc delete secret kubeadmin -n kube-system
 ~~~
 * Configure the HTPasswd identity provider for authentication
 ~~~
@@ -126,6 +128,12 @@ spec:
 #patch oauth
 oc replace -f oauth.yaml
 ~~~
+
+#after configuring identity provider and creating user with cluster-admin role, kubeadmin user shueld be removed
+~~~
+oc delete secret kubeadmin -n kube-system
+~~~
+
 * Modify user passwords/delete user
 ~~~
 oc extract secret/password-secret -n openshoft-config --to /tmp/ --confirm
@@ -155,7 +163,7 @@ oc get groups
 ~~~
 
 ## Control access to resources
-SCC (Security Context Constraints) - security mechanizm that restrict access to host resurses, but not to operations in OpenShift.
+* SCC (Security Context Constraints) - security mechanizm that restrict access to host resurses, but not to operations in OpenShift.
 ~~~
 oc get scc
 oc describe scc anyuid
@@ -164,6 +172,19 @@ oc get pod <podname> -o yaml | oc adm policy scc-subject-review -f -
 oc create serviceaccount <serviceaccountname>
 oc adm policy add-scc-to-user <scc> -z <serviceaccountname>
 oc set serviceaccount deployment/<deploymentname> <serviceaccountname>
+~~~
+* Configuring clusterrolbinding
+~~~
+oc get clusterrolbinding
+oc describe clusterrolbinding self-provisioners
+oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
+oc adm policy add-cluster-role-to-group --rolebinding-name self-provisioners self-provisioner system:authenticated:oauth
+~~~
+* Create and apply secrets to manage sensitive information
+~~~
+ oc create secret tls secret-tls --cert /path-to-certificate --key /path-to-key
+ oc set env deployment/demo --from secret/demo-secret --prefix MYSQL_
+ oc set volume deployment/demo --add --type secret --secret-name demo-secret --mount-path /app-secrets
 ~~~
 ## Configure networking components
 * Troubleshoot software defined networking
