@@ -201,8 +201,9 @@ oc create route edge <routename> --service <svcname> --hostname <somehostname> /
 oc extract secret/router-ca -n openshift-openshift-ingress-operator --key tls.crt
 curl --cacert tls.crt https://<hostname>
 ~~~
-* Control cluster network ingress
+* Control cluster network ingress  
 network policy template:
+~~~
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -222,6 +223,7 @@ spec:
       ports:
       - port: 8080
         protocol: TCP
+~~~        
 ~~~
 oc create -f network_policy_1 -n <namespacename>
 oc label namespace <fromnamespacename> name=<fromnamespacename>
