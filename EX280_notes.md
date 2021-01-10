@@ -250,7 +250,7 @@ oc create route passthrough <routname> --service <servicename> --port 8443 --hos
   oc autoscale dc/<dc_name> --min 1 --max 10 --cpu-present 80
   oc get hpa
 ~~~
-* Control pod placement across cluster nodes
+* Control pod placement across cluster nodes  
 Node labling
 ~~~
   oc label node <nodename> env=prod --overwrite
