@@ -1,3 +1,4 @@
+# Red Hat Certified Specialist in OpenShift Administration
 # Exam Objectives
 ## Manage OpenShift Container Platform
 * Use the command-line interface to manage and configure an OpenShift cluster
