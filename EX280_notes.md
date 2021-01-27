@@ -66,9 +66,11 @@ oc adm node-logs <nodename>
 
 * Opening Shell on a Node:
 ~~~
-oc debug <nodename>
+oc debug node/<nodename>
 chroot /host
 crictl ps
+systemctl is-active kubelet
+systemctl is-active cri-o
 ~~~
 
 * View logs
@@ -100,7 +102,7 @@ oc get storageclass
 oc set volume deployment/<depl_name> --add --type pvc --name <stor_name> --claim-class <storageclass_name> --claim-mode rwo --claim-size 15Gi --munt-path /var/liv/example-app --claim-name <claim_name>
 ~~~
 ## Manage users and policies
-* after OS installation configure KUBECONFIG, password for kubeadmin can be find in installation logs
+* after OS installation configure KUBECONFIG, password for kubeadmin can be found in installation logs
 ~~~
 export KUBECONFIG=/home/user/auth/kubeconfig
 oc login -u kubeadmin -p <password>
