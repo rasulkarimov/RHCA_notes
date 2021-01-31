@@ -82,5 +82,13 @@ Create sample index.html:
 ~~~
 cat "Test page for s2i" > s2i-lighttpd/test/test-app/index.html
 ~~~
+Build s2i from s2i-lighttpd directory:
+~~~
+s2i build test/test-app/ lighttpd-centos7 sample-app
+~~~
+Test app:
+~~~
+sudo podman run -p 8080:8080 sample-app
+~~~
 * Deploy applications using S2I
 * Customize existing S2I builder images
