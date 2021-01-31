@@ -31,4 +31,56 @@
 * Add a custom parameter to a template
 
 # Notes
-## Work with Red Hat OpenShift Container Platform
+## Work with the source-to-image (S2I) tool
+*opt Create an S2I Builder Image
+~~~
+s2i create lighttpd-centos7 s2i-lighttpd
+~~~
+fill Dockerfile:
+~~~
+FROM openshift/base-centos7
+ENV LIGHTTPD_VERSION=1.4.35
+LABEL io.k8s.description="Platform for serving static HTML files" \
+io.k8s.display-name="Lighttpd 1.4.35" \
+io.openshift.expose-services="8080:http" \
+io.openshift.tags="builder,html,lighttpd"
+RUN yum install -y lighttpd && \
+    yum clean all -y
+LABEL io.openshift.s2i.scripts-url=image:///usr/local/s2i
+COPY ./.s2i/bin/ /usr/local/s2i
+COPY ./etc/ /opt/app-root/etc
+RUN chown -R 1001:1001 /opt/app-root
+USER 1001
+EXPOSE 8080
+~~~
+fill "assemble", which is responsible for building the application:
+~~~
+#!/bin/bash -e
+echo "---> Installing application source"
+cp -Rf /tmp/src/. ./
+~~~
+fill "run", which is responsible for running the application
+~~~
+#!/bin/bash -e
+exec lighttpd -D -f /opt/app-root/etc/lighttpd.conf
+~~~
+Creating lighttpd configuration file:
+~~~
+cat << EOF
+server.document-root = "/opt/app-root/src"
+index-file.names = ( "index.html" )
+server.port = 8080
+mimetype.assign = (
+".html" => "text/html",
+".txt" => "text/plain",
+".jpg" => "image/jpeg",
+".png" => "image/png"
+)
+EOF
+~~~
+Create sample index.html:
+~~~
+cat "Test page for s2i" > s2i-lighttpd/test/test-app/index.html
+~~~
+* Deploy applications using S2I
+* Customize existing S2I builder images
