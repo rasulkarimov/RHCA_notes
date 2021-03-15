@@ -31,6 +31,17 @@
 * Add a custom parameter to a template
 
 # Notes
+## Work with Red Hat OpenShift Container Platform
+* Create and work with multiple OpenShift projects
+* Deploy applications
+* Implement application health monitoring
+* Understand basic Git usage and work with Git in the context of deploying applications in OpenShift
+* Configure the OpenShift internal registry to meet specific requirements
+## Work with container images
+* Use command line utilities to manipulate container images
+* Optimize container images
+## Troubleshoot application deployment issues
+* Diagnose and correct minor issues with application deployment
 ## Work with configuration maps
 * Create configuration maps
 To create cm that stores string literals:
