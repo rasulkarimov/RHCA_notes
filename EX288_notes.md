@@ -37,6 +37,46 @@
 * Implement application health monitoring
 * Understand basic Git usage and work with Git in the context of deploying applications in OpenShift
 * Configure the OpenShift internal registry to meet specific requirements
+Managing container registries with skopeo:
+~~~
+skopeo inspect --creds <username>:<password> docker://<registry>/<suregistry>/<dockerimage>
+skopeo copy ==dest=tls=verify=false container-storage:<myimage> docker://<registry>/<subregistry>/<image>
+~~~
+When copying between private registries:
+~~~
+skopeo copy --src-creds=<user>:<password> --dest-creds=<user>:<password> docker://<reg>/<subreg>/<image> docker://<reg>/<subreg>/<image>
+~~~
+Deleting image:
+~~~
+skopeo delete docker://<reg>/<subreg>/<image>
+~~~
+Authentication OS to private registry:
+~~~
+oc create secret docker-registry <regcreds> --docker-server registry.example.com --docker-username <username> --docker-password <password>
+oc create secret generic <registrycreds> --from-file .dockerconfigjson=/run/user/<uid>/containers/auth,json --type kubernetes.io/dockerconfigjson
+~~~
+Link secret to the default service account in proj:
+~~~
+oc secrets link default <registrycreds> --for pull
+~~~
+To use the secret to access s2i builder image, link to the builder service account:
+~~~
+oc secrets link builder <registrycreds>
+~~~
+Expose internal registry for external access:
+~~~
+oc patch config cluster -n openshift-image-registetry --type merge -p '{"spec":{"defaultRoute":true}}'
+oc get route -n openshift-image-registry
+~~~
+Authenticating to internal reg:
+~~~
+podman login -u <username> -p $(oc whoami -t) default-route-openshift-image-registry.<domain>
+skopeo inspect --creds=<username>:<tocken> docker://<reg>/<subreg>/<image>
+~~~
+Grant Access ti images in internal registry:
+~~~
+oc policy add-role-to-user system:image-puller <username> -n <projectname>
+~~~
 ## Work with container images
 * Use command line utilities to manipulate container images
 * Optimize container images
