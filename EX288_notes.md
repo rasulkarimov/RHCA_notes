@@ -31,6 +31,32 @@
 * Add a custom parameter to a template
 
 # Notes
+## Work with configuration maps
+* Create configuration maps
+To create cm that stores string literals:
+~~~
+oc create configmap cm_name --from-literal key1=value1 --from-literal key2-value2
+~~~
+To create cm from file:
+~~~
+oc create cm cm_name --from-file /path/to/file
+~~~
+Tocreate secrets:
+~~~
+oc create secret generic <secret_name> --from-literal username=<username> --from-literal password=<password>
+oc create secret generic <secret_name> --from-file <file_name>
+~~~
+* Use configuration maps to inject data into applications
+To inject cm data into environment:
+~~~
+oc set env dc/<dc_name> --from cm/<cm_name>
+~~~
+To mount keys from cm as files in volume inside pods:
+~~~
+oc set volume dc/<dc_name> --add -t configmap -m </path/to/volume> --name <myvol> --config-name <cm_name>
+oc set volume dc/<dcname> --add -t secret -m <path/to/volume> --name <myvol> --secret-name <mysecret>
+~~~
+
 ## Work with the source-to-image (S2I) tool
 *opt Create an S2I Builder Image
 ~~~
