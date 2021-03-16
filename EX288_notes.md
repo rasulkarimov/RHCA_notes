@@ -36,7 +36,7 @@
 * Deploy applications
 * Implement application health monitoring
 * Understand basic Git usage and work with Git in the context of deploying applications in OpenShift
-* Configure the OpenShift internal registry to meet specific requirements
+* Configure the OpenShift internal registry to meet specific requirements  
 Managing container registries with skopeo:
 ~~~
 skopeo inspect --creds <username>:<password> docker://<registry>/<suregistry>/<dockerimage>
