@@ -77,6 +77,29 @@ Grant Access ti images in internal registry:
 ~~~
 oc policy add-role-to-user system:image-puller <username> -n <projectname>
 ~~~
+Managing Image Streams
+Create secret for remote regestry:
+~~~
+podman login -u <username> <regestry>
+oc create secrete generic <secneme> --from-file .dockerconfigjson=/run/user/1000/containers/auth.json --type kubernetes.io/dockerconfigjson
+~~~
+Import is from external registry:
+~~~
+oc import-image <imagename>:<tag> --confirm --from <reg>/<subreg>/<image>:<tag>
+~~~
+To create is for each source image tag:
+~~~
+oc import-image <image> --confirm --all --from <reg>/<subreg>/<image>:<tag>
+~~~
+Sharing is between projects:
+~~~
+podman login -u <reg>
+oc project project1
+oc create secrete generic <secname> --from-file .dockerconfigjson=/run/user/1000/containers/auth.json --type kuberneted.io/dockerconfigjson
+oc import-image <is_name> --confirm --reference-policy local --from <ext_regestry> // reference-policy - to cache image layers in the internal registry
+oc project project2
+oc new-app --as-deployment-config -i project1/<is_name>
+~~~
 ## Work with container images
 * Use command line utilities to manipulate container images
 * Optimize container images
