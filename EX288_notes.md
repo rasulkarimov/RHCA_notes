@@ -103,8 +103,13 @@ oc new-app --as-deployment-config -i project1/<is_name>
 ## Work with container images
 * Use command line utilities to manipulate container images
 * Optimize container images
+
 ## Troubleshoot application deployment issues
 * Diagnose and correct minor issues with application deployment
+## Work with image streams
+* Create custom image streams to deploy applications
+* Pull applications from existing Git repositories
+* Debug minor issues with application deployment
 ## Work with configuration maps
 * Create configuration maps
 To create cm that stores string literals:
