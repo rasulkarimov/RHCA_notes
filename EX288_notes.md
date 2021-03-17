@@ -96,7 +96,29 @@ oc project project2
 oc new-app --as-deployment-config -i project1/<is_name>
 ~~~
 ## Building Applications
-
+Managing application builds:
+~~~
+oc start-build <name>
+oc cansel build <name>
+oc delete bc/<name>
+oc delete build <name>
+~~~
+Log verbosity:
+~~~
+oc set env bc/<name> BUILD_LOGLEVEL="4"
+~~~
+Defining triggers:
+~~~
+oc describe bc/<name>
+oc set triggers bc/<name> --from-image=<proj>/<image>:<tag>
+oc set triggers bc/<name> --from-image=<proj>/<image>:<tag> --remove
+oc set triggers bc/<name> --from-gitlab [--remove]
+~~~
+Post-commit build hooks:
+~~~
+oc set build-hook bc/<name> --post-commit --command <hook command> --verbose
+oc set build-hook bc/<name> --post-commit --script="curl http://api.com/user/${USER}"
+~~~
 ## Work with configuration maps
 * Create configuration maps
 To create cm that stores string literals:
