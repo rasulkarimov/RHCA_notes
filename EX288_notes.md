@@ -119,6 +119,22 @@ Post-commit build hooks:
 oc set build-hook bc/<name> --post-commit --command <hook command> --verbose
 oc set build-hook bc/<name> --post-commit --script="curl http://api.com/user/${USER}"
 ~~~
+## Application Deployments
+Creating probes using CLI:
+~~~
+oc set probe dc/<name> --readiness --get-url=http://:8080/healthz --initial-delay-seconds=2 --timeout-seconds=2
+oc set probe dc/<name> --liveness --get-url=http://:8080/ready --initial-delay-seconds=2 --timeout-seconds=2
+~~~
+Managing Deployments:
+~~~
+oc rollout latest dc/<name>
+oc rollout history dc/<name> [--revision=1]
+oc rollout cancel dc/<name>
+oc rollout retry dc/<name>
+oc rollback dc/<name>
+oc set triggers dc/<name> --auto
+oc logs --version=1 dc/<name>
+~~~
 ## Work with configuration maps
 * Create configuration maps
 To create cm that stores string literals:
