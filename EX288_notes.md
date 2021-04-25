@@ -120,8 +120,8 @@ oc set build-hook bc/<name> --post-commit --command <hook command> --verbose
 oc set build-hook bc/<name> --post-commit --script="curl http://api.com/user/${USER}"
 ~~~
 ## Work with hooks and triggers
-* Create a hook that runs a provided script
-Configuring a Post-commit Build Hook:
+* Create a hook that runs a provided script  
+Configuring a Post-commit Build Hook:  
 Command(command is exected usin "exec" system call):
 ~~~
 oc set build-hook bc/name --post-commit --command -- <some command to execute>
